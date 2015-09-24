@@ -126,42 +126,42 @@ function __makePS1() {
     PS1+="${debian_chroot:+($debian_chroot)}"
 
     if [ `id -u` != 0 ]; then
-        PS1+="${Green}\u" # user
+        PS1+="\[${Green}\]\u" # user
     else
-        PS1+="${Red}\u" # root
+        PS1+="\[${Red}\]\u" # root
     fi
 
-    PS1+="${Color_Off}@" # @
+    PS1+="\[${Color_Off}\]@" # @
 
     if [ ! -n "$HOST_COLOR" ]; then
         local HOST=$(( (${#HOSTNAME}+0x$(hostid)) % 15+1))
         HOST_COLOR=$(tput setaf $((host%5 + 2)))
     fi
 
-    PS1+="${UBlack}${HOST_COLOR}\h${Color_Off}:" # host
+    PS1+="\[${UBlack}${HOST_COLOR}\]\h\[${Color_Off}\]:" # host
 
-    PS1+="${BYellow}\w" # working directory
+    PS1+="\[${BYellow}\]\w" # working directory
 
     # background jobs
     local NO_JOBS=`jobs -p | wc -w`
     if [ $NO_JOBS != 0 ]; then
-        PS1+=" ${BIGreen}[j${NO_JOBS}]${Color_Off}"
+        PS1+=" \[${BGreen}\][j${NO_JOBS}]\[${Color_Off}\]"
     fi
 
     # screen jobs
     if [ -d /var/run/screens/S-`whoami` ]; then
         local SCREEN_JOBS=`ls /var/run/screens/S-\`whoami\` | wc -w`
         if [ $SCREEN_JOBS != 0 ]; then
-            PS1+=" ${BIGreen}[s${SCREEN_JOBS}]${Color_Off}"
+            PS1+=" \[${BGreen}\][s${SCREEN_JOBS}]\[${Color_Off}\]"
         fi
     fi
 
     # exit code
     if [ $EXIT != 0 ]; then
-        PS1+=" ${BIRed}[!${EXIT}]${Color_Off}"
+        PS1+=" \[${BRed}\][!${EXIT}]\[${Color_Off}\]"
     fi
 
-    PS1+=" ${BPurple}\$${Color_Off} " # prompt
+    PS1+=" \[${BPurple}\]\$\[${Color_Off}\] " # prompt
 }
 
 if [ "$color_prompt" = yes ]; then
@@ -175,7 +175,6 @@ unset color_prompt force_color_prompt
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
     alias dir='dir --color=auto'
     alias vdir='vdir --color=auto'
 
@@ -191,3 +190,10 @@ fi
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
+
+umask 022
+
+export EDITOR=vim
+export PAGER=most
+
+export PATH=~/bin:$PATH
