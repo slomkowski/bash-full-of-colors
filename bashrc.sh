@@ -120,10 +120,12 @@ fi
 function __makeTerminalTitle() {
     local title=''
 
+    local CURRENT_DIR="${PWD/#$HOME/\~}"
+
     if [ -n "${SSH_CONNECTION}" ]; then
-        title+="`hostname`:`pwd` [`whoami`@`hostname -f`]"
+        title+="`hostname`:${CURRENT_DIR} [`whoami`@`hostname -f`]"
     else
-        title+="`pwd` [`whoami`]"
+        title+="${CURRENT_DIR} [`whoami`]"
     fi
 
     echo -en '\033]2;'${title}'\007'
@@ -133,7 +135,7 @@ function __makePS1() {
     local EXIT="$?"
 
     if [ ! -n "$HOST_COLOR" ]; then
-        local H=$(( (${#HOSTNAME}+0x$(hostid)) % 15+1))
+        H=$(( (${#HOSTNAME}+0x$(hostid)) % 15+1))
         HOST_COLOR=$(tput setaf $((H%5 + 2)))
     fi
 
@@ -155,7 +157,7 @@ function __makePS1() {
     PS1+=":\[${BYellow}\]\w" # working directory
 
     # background jobs
-    local NO_JOBS=`jobs -p | wc -w`
+    NO_JOBS=`jobs -p | wc -w`
     if [ ${NO_JOBS} != 0 ]; then
         PS1+=" \[${BGreen}\][j${NO_JOBS}]\[${Color_Off}\]"
     fi
@@ -165,13 +167,22 @@ function __makePS1() {
 
     for screen_path in ${SCREEN_PATHS}; do
         if [ -d ${screen_path} ]; then
-            local SCREEN_JOBS=`ls ${screen_path} | wc -w`
+            SCREEN_JOBS=`ls ${screen_path} | wc -w`
             if [ ${SCREEN_JOBS} != 0 ]; then
                 PS1+=" \[${BGreen}\][s${SCREEN_JOBS}]\[${Color_Off}\]"
             fi
             break
         fi
     done
+
+    # git branch
+    if [ -x "`which git 2>&1`" ]; then
+        local BRANCH="$(git branch 2>/dev/null | sed -e "/^\s/d" -e "s/^\*\s//")"
+
+        if [ -n "${BRANCH}" ]; then
+            PS1+=" \[${BBlue}\](${BRANCH})\[${Color_Off}\]"
+        fi
+    fi
 
     # exit code
     if [ ${EXIT} != 0 ]; then
