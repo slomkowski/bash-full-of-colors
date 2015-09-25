@@ -115,53 +115,72 @@ else
 	color_prompt=
 fi
 
-unset HOST_COLOR
-
 #HOST_COLOR=${UGreen}
+
+function __makeTerminalTitle() {
+    local title=''
+
+    if [ -n "${SSH_CONNECTION}" ]; then
+        title+="`hostname`:`pwd` [`whoami`@`hostname -f`]"
+    else
+        title+="`pwd` [`whoami`]"
+    fi
+
+    echo -en '\033]2;'${title}'\007'
+}
 
 function __makePS1() {
     local EXIT="$?"
 
+    if [ ! -n "$HOST_COLOR" ]; then
+        local H=$(( (${#HOSTNAME}+0x$(hostid)) % 15+1))
+        HOST_COLOR=$(tput setaf $((H%5 + 2)))
+    fi
+
     PS1=''
+
     PS1+="${debian_chroot:+($debian_chroot)}"
 
     if [ `id -u` != 0 ]; then
-        PS1+="\[${Green}\]\u" # user
+        PS1+="\[${Green}\]\u\[${Color_Off}\]" # user
     else
-        PS1+="\[${Red}\]\u" # root
+        PS1+="\[${Red}\]\u\[${Color_Off}\]" # root
     fi
 
-    PS1+="\[${Color_Off}\]@" # @
-
-    if [ ! -n "$HOST_COLOR" ]; then
-        local HOST=$(( (${#HOSTNAME}+0x$(hostid)) % 15+1))
-        HOST_COLOR=$(tput setaf $((host%5 + 2)))
+    if [ -n "${SSH_CONNECTION}" ]; then
+        PS1+="@" # @
+        PS1+="\[${UBlack}${HOST_COLOR}\]\h\[${Color_Off}\]" # host displayed only if ssh connection
     fi
 
-    PS1+="\[${UBlack}${HOST_COLOR}\]\h\[${Color_Off}\]:" # host
-
-    PS1+="\[${BYellow}\]\w" # working directory
+    PS1+=":\[${BYellow}\]\w" # working directory
 
     # background jobs
     local NO_JOBS=`jobs -p | wc -w`
-    if [ $NO_JOBS != 0 ]; then
+    if [ ${NO_JOBS} != 0 ]; then
         PS1+=" \[${BGreen}\][j${NO_JOBS}]\[${Color_Off}\]"
     fi
 
-    # screen jobs
-    if [ -d /var/run/screens/S-`whoami` ]; then
-        local SCREEN_JOBS=`ls /var/run/screens/S-\`whoami\` | wc -w`
-        if [ $SCREEN_JOBS != 0 ]; then
-            PS1+=" \[${BGreen}\][s${SCREEN_JOBS}]\[${Color_Off}\]"
+    # screen sessions
+    SCREEN_PATHS="/var/run/screens/S-`whoami` /var/run/screen/S-`whoami` /var/run/uscreens/S-`whoami`"
+
+    for screen_path in ${SCREEN_PATHS}; do
+        if [ -d ${screen_path} ]; then
+            local SCREEN_JOBS=`ls ${screen_path} | wc -w`
+            if [ ${SCREEN_JOBS} != 0 ]; then
+                PS1+=" \[${BGreen}\][s${SCREEN_JOBS}]\[${Color_Off}\]"
+            fi
+            break
         fi
-    fi
+    done
 
     # exit code
-    if [ $EXIT != 0 ]; then
+    if [ ${EXIT} != 0 ]; then
         PS1+=" \[${BRed}\][!${EXIT}]\[${Color_Off}\]"
     fi
 
     PS1+=" \[${BPurple}\]\$\[${Color_Off}\] " # prompt
+
+    __makeTerminalTitle
 }
 
 if [ "$color_prompt" = yes ]; then
