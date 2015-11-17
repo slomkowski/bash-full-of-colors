@@ -135,23 +135,27 @@ function __makePS1() {
     local EXIT="$?"
 
     if [ ! -n "$HOST_COLOR" ]; then
-        H=$(( (${#HOSTNAME}+0x$(hostid)) % 15+1))
-        HOST_COLOR=$(tput setaf $((H%5 + 2)))
+        H=$(( (${#HOSTNAME}+0x$(hostid))))
+        HOST_COLOR=$(tput setaf $((H%5 + 2))) # foreground
+        #HOST_COLOR="\e[4$((H%5 + 2))m" # background
     fi
 
     PS1=''
 
     PS1+="${debian_chroot:+($debian_chroot)}"
 
-    if [ `id -u` != 0 ]; then
-        PS1+="\[${Green}\]\u\[${Color_Off}\]" # user
+    if [ ${USER} == root ]; then
+        PS1+="\[${Red}\]" # root
+    elif [ ${USER} != ${LOGNAME} ]; then
+        PS1+="\[${Blue}\]" # normal user
     else
-        PS1+="\[${Red}\]\u\[${Color_Off}\]" # root
+        PS1+="\[${Green}\]" # normal user
     fi
+    PS1+="\u\[${Color_Off}\]"
 
     if [ -n "${SSH_CONNECTION}" ]; then
-        PS1+="@" # @
-        PS1+="\[${UBlack}${HOST_COLOR}\]\h\[${Color_Off}\]" # host displayed only if ssh connection
+        PS1+="\[${BWhite}\]@"
+        PS1+="\[${UWhite}${HOST_COLOR}\]\h\[${Color_Off}\]" # host displayed only if ssh connection
     fi
 
     PS1+=":\[${BYellow}\]\w" # working directory
@@ -189,13 +193,14 @@ function __makePS1() {
         PS1+=" \[${BRed}\][!${EXIT}]\[${Color_Off}\]"
     fi
 
-    PS1+=" \[${BPurple}\]\$\[${Color_Off}\] " # prompt
+    PS1+=" \[${BPurple}\]\\$\[${Color_Off}\] " # prompt
 
     __makeTerminalTitle
 }
 
 if [ "$color_prompt" = yes ]; then
     PROMPT_COMMAND=__makePS1
+    PS2="\[${BPurple}\]>\[${Color_Off}\] " # continuation prompt
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -226,4 +231,7 @@ umask 022
 export EDITOR=vim
 export PAGER=most
 
-export PATH=~/bin:$PATH
+
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
