@@ -173,7 +173,11 @@ function __makePS1() {
         if [ -d ${screen_path} ]; then
             SCREEN_JOBS=`ls ${screen_path} | wc -w`
             if [ ${SCREEN_JOBS} != 0 ]; then
-                PS1+=" \[${BGreen}\][s${SCREEN_JOBS}]\[${Color_Off}\]"
+                local current_screen="$(echo ${STY} | cut -d '.' -f 1)"
+                if [ -n "${current_screen}" ]; then
+                    current_screen=":${current_screen}"
+                fi
+                PS1+=" \[${BGreen}\][s${SCREEN_JOBS}${current_screen}]\[${Color_Off}\]"
             fi
             break
         fi
