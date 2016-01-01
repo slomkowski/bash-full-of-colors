@@ -10,4 +10,4 @@ fi
 scp bashrc.sh       $1:~/.bashrc
 scp bash_profile.sh $1:~/.bash_profile
 scp bash_aliases.sh $1:~/.bash_aliases
-
+scp bash_logout.sh  $1:~/.bash_logout
