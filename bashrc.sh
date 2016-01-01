@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 # ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
 
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
@@ -26,7 +24,7 @@ shopt -s checkwinsize
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+if [ -z "${debian_chroot}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
@@ -131,11 +129,19 @@ function __makeTerminalTitle() {
     echo -en '\033]2;'${title}'\007'
 }
 
+function __getMachineId() {
+    if [ -f /etc/machine-id ]; then
+        echo $((0x$(cat /etc/machine-id | head -c 15)))
+    else
+        echo $(( (${#HOSTNAME}+0x$(hostid))))
+    fi
+}
+
 function __makePS1() {
     local EXIT="$?"
 
-    if [ ! -n "$HOST_COLOR" ]; then
-        H=$(( (${#HOSTNAME}+0x$(hostid))))
+    if [ ! -n "${HOST_COLOR}" ]; then
+        local H=$(__getMachineId)
         HOST_COLOR=$(tput setaf $((H%5 + 2))) # foreground
         #HOST_COLOR="\e[4$((H%5 + 2))m" # background
     fi
@@ -161,13 +167,13 @@ function __makePS1() {
     PS1+=":\[${BYellow}\]\w" # working directory
 
     # background jobs
-    NO_JOBS=`jobs -p | wc -w`
+    local NO_JOBS=`jobs -p | wc -w`
     if [ ${NO_JOBS} != 0 ]; then
         PS1+=" \[${BGreen}\][j${NO_JOBS}]\[${Color_Off}\]"
     fi
 
     # screen sessions
-    SCREEN_PATHS="/var/run/screens/S-`whoami` /var/run/screen/S-`whoami` /var/run/uscreens/S-`whoami`"
+    local SCREEN_PATHS="/var/run/screens/S-`whoami` /var/run/screen/S-`whoami` /var/run/uscreens/S-`whoami`"
 
     for screen_path in ${SCREEN_PATHS}; do
         if [ -d ${screen_path} ]; then
