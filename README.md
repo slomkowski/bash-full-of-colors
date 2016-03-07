@@ -10,14 +10,8 @@ Features:
 * shows checked-out branch name when current directory is within Git repository
 * shows last command return code if it differs from 0
 
+
 ## Installation
-
-Install following packages:
-```bash
-aptitude install most multitail pydf
-```
-
-If you don't want to use any of them, modify `bash_aliases.sh` accordingly.
 
 The most convenient way of installation is to checkout the repository and symlink the relevant scripts.
 Assuming the installation in home directory:
@@ -31,6 +25,30 @@ ln -s bash-full-of-colors/bash_profile.sh .bash_profile
 ln -s bash-full-of-colors/bash_aliases.sh .bash_aliases
 ln -s bash-full-of-colors/bash_logout.sh .bash_logout
 ```
+
+
+## Application aliases
+
+Many Unix commands have already newer and more feature-rich replacements. Following aliases are defined in
+`bash_aliases.sh`:
+
+|Command:       |Replacement:    |
+| ------------- | -------------- |
+|df             |pydf            |
+|less           |most            |
+|tail           |multitail       |
+|top            |htop            |
+|tracepath      |mtr             |
+|traceroute     |mtr             |
+
+To install them, run following command:
+
+```bash
+aptitude install most multitail pydf mtr htop
+```
+
+If you don't have them installed, script falls back to the original command.
+
 
 ## Credits
 

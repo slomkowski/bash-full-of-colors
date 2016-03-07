@@ -1,19 +1,15 @@
 #!/usr/bin/env bash
 
-export LS_OPTIONS='--color=auto -h'
+export __LS_OPTIONS='--color=auto -h'
 
-alias ls='ls $LS_OPTIONS'
-alias ll='ls $LS_OPTIONS -l'
-alias la='ls $LS_OPTIONS -la'
-alias l='ls $LS_OPTIONS -CF'
+alias ls='ls $__LS_OPTIONS'
+alias ll='ls $__LS_OPTIONS -l'
+alias la='ls $__LS_OPTIONS -la'
+alias l='ls $__LS_OPTIONS -CF'
 
 alias cd..='cd ..'
 alias ..='cd ..'
 alias ...='cd ../..'
-
-alias less='most'
-alias tail='multitail'
-alias df='pydf'
 
 alias bc='bc -l'
 
@@ -22,7 +18,19 @@ alias mkdir='mkdir -p -v'
 alias mv='mv -iv'
 alias rm='rm -Iv --one-file-system --preserve-root'
 
+# function checks if the application is installed
+function __add_command_replace_alias() {
+    if [ -x "`which $2 2>&1`" ]; then
+        alias $1=$2
+    fi
+}
 
+__add_command_replace_alias less 'most'
+__add_command_replace_alias tail 'multitail'
+__add_command_replace_alias df 'pydf'
+__add_command_replace_alias traceroute 'mtr'
+__add_command_replace_alias tracepath 'mtr'
+__add_command_replace_alias top 'htop'
 
 function allcolors() {
     # credit to http://askubuntu.com/a/279014
