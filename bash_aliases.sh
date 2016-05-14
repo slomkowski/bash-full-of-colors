@@ -25,7 +25,15 @@ function __add_command_replace_alias() {
     fi
 }
 
-__add_command_replace_alias less 'most'
+if [ -x "`which most 2>&1`" ]; then
+    alias less=most
+    export PAGER=most
+fi
+
+if [ -x "`which vim 2>&1`" ]; then
+        export EDITOR=vim
+fi
+
 __add_command_replace_alias tail 'multitail'
 __add_command_replace_alias df 'pydf'
 __add_command_replace_alias traceroute 'mtr'

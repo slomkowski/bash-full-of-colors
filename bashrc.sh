@@ -246,10 +246,6 @@ fi
 
 umask 022
 
-export EDITOR=vim
-export PAGER=most
-
-
 if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
