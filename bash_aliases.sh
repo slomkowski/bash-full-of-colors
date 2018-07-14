@@ -6,6 +6,7 @@ alias ls='ls $__LS_OPTIONS'
 alias ll='ls $__LS_OPTIONS -l'
 alias la='ls $__LS_OPTIONS -la'
 alias l='ls $__LS_OPTIONS -CF'
+alias sl='ls $__LS_OPTIONS'
 
 alias cd..='cd ..'
 alias ..='cd ..'
