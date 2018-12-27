@@ -150,6 +150,12 @@ function __makePS1() {
 
     PS1+="${debian_chroot:+($debian_chroot)}"
 
+    if [ -n "${VIRTUAL_ENV}" ]; then
+        local VENV=`basename $VIRTUAL_ENV`
+        echo $VENV
+        PS1+="\[${BWhite}\]\[(${VENV})\] \[${Color_Off}\]" # show virtualenv if in it
+    fi
+
     if [ ${USER} == root ]; then
         PS1+="\[${Red}\]" # root
     elif [ ${USER} != ${LOGNAME} ]; then
@@ -242,6 +248,10 @@ fi
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
+fi
+
+if [ -f ~/.bash_local ]; then
+    . ~/.bash_local
 fi
 
 umask 022
