@@ -152,7 +152,6 @@ function __makePS1() {
 
     if [ -n "${VIRTUAL_ENV}" ]; then
         local VENV=`basename $VIRTUAL_ENV`
-        echo $VENV
         PS1+="\[${BWhite}\]\[(${VENV})\] \[${Color_Off}\]" # show virtualenv if in it
     fi
 
