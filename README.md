@@ -9,6 +9,7 @@ Features:
 * *hostname* color is based on host unique identifier to simplify server identification by the user when working with multiple open SSH sessions
 * shows checked-out branch name when current directory is within Git repository
 * shows last command return code if it differs from 0
+* shows Python virtualenv
 
 
 ## Installation
