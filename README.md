@@ -51,6 +51,7 @@ aptitude install most multitail pydf mtr htop
 
 If you don't have them installed, script falls back to the original command.
 
+You can also create your own local aliases. Create the file `~/.bash_local` file and place them there.
 
 ## Credits
 
