@@ -115,13 +115,14 @@ fi
 
 #HOST_COLOR=${UGreen}
 
+FQDN=`hostname -f`
 function __makeTerminalTitle() {
     local title=''
 
     local CURRENT_DIR="${PWD/#$HOME/\~}"
 
     if [ -n "${SSH_CONNECTION}" ]; then
-        title+="`hostname`:${CURRENT_DIR} [`whoami`@`hostname -f`]"
+        title+="`hostname`:${CURRENT_DIR} [`whoami`@${FQDN}]"
     else
         title+="${CURRENT_DIR} [`whoami`]"
     fi
