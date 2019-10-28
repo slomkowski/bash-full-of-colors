@@ -153,7 +153,7 @@ function __makePS1() {
 
     if [ -n "${VIRTUAL_ENV}" ]; then
         local VENV=`basename $VIRTUAL_ENV`
-        PS1+="\[${BWhite}\]\[(${VENV})\] \[${Color_Off}\]" # show virtualenv if in it
+        PS1+="\[${BWhite}\](${VENV}) \[${Color_Off}\]" # show virtualenv if in it
     fi
 
     if [ ${USER} == root ]; then
